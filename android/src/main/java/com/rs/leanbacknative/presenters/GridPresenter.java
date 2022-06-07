@@ -20,7 +20,7 @@ public class GridPresenter extends VerticalGridPresenter {
     }
 
     @Override
-    protected ViewHolder createGridViewHolder(ViewGroup parent) {
+    protected VerticalGridPresenter.ViewHolder createGridViewHolder(ViewGroup parent) {
         ViewHolder viewHolder = super.createGridViewHolder(parent);
         VerticalGridView gridView = viewHolder.getGridView();
 
