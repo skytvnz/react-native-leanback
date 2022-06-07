@@ -163,4 +163,9 @@ public class LeanbackRowLayout extends FrameLayout {
     public void setRowTitle(String title) {
         mRowTitle = title;
     }
+
+    public void setRowFocusByIndex(int index) {
+        //TODO the set focus by setSelectedPosition dont work
+        //mRowsFragment.setSelectedPosition(index, true);
+    }
 }

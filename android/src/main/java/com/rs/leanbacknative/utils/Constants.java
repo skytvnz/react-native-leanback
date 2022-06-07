@@ -11,6 +11,7 @@ public class Constants {
     public static final String CARD_SHARE_ROUND = "round";
     public static final String CARD_SHARE_SQUARE = "square";
     public static final String COMMAND_REQUEST_FOCUS = "request-focus";
+    public static final String COMMAND_REQUEST_FOCUS_BY_ID = "requestFocusById";
     public static final String EVENT_ON_PRESS = "onPress";
     public static final String EVENT_ON_FOCUS = "onFocus";
     public static final String EVENT_ON_DATA_IDS_READY = "onDataIdsReady";

@@ -21,6 +21,17 @@ public class DataManager {
         return viewIds;
     }
 
+    // this method converts card ID ex: 'mac_123_21323' to integer by summing all characters ASCII index
+    // Using this we can make sure the view ID dont change when component is remounted
+    private int convertStringToInt(String id) {
+        char[] charArray = id.toCharArray();    
+        int result = 0;
+        for (char ch: charArray) {
+            result += (int)ch;
+        }
+        return result;
+    }
+
     public List<Card> setupData(@Nullable ReadableArray data, ReadableMap attributes) {
         List<Card> rows = new ArrayList<>();
         ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -28,14 +39,16 @@ public class DataManager {
 
         for (int i = 0; i < data.size(); i++) {
             random.nextInt();
-            int viewId = View.generateViewId() + random.nextInt(); // ensure viewID is not duplicate with React ones
-            ids.add(viewId);
             ReadableMap dataRowItem = data.getMap(i);
+
+            String cardID = validateString(dataRowItem, "id");
+            int generatedCardID = this.convertStringToInt(cardID);
+            ids.add(generatedCardID);
 
             Card card = new Card();
             card.setIndex(i);
             card.setIsLast(i == data.size());
-            card.setViewId(viewId);
+            card.setViewId(generatedCardID);
             card.setId(validateString(dataRowItem, "id"));
             card.setTitle(validateString(dataRowItem, "title"));
             card.setSubtitle(validateString(dataRowItem, "subtitle"));

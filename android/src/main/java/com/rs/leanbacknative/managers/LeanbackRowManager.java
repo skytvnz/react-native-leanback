@@ -54,12 +54,28 @@ public class LeanbackRowManager extends ViewGroupManager<LeanbackRowLayout> {
     }
 
     @Override
-    public void receiveCommand(@NonNull final LeanbackRowLayout view, String commandType, @Nullable ReadableArray args) {
+    public void receiveCommand(@NonNull final LeanbackRowLayout view, String commandType, @Nullable final ReadableArray args) {
         if (Constants.COMMAND_REQUEST_FOCUS.equals(commandType)) {
             view.post(new Runnable() {
                 @Override
                 public void run() {
                     view.requestFocus();
+                }
+            });
+        }
+        if (Constants.COMMAND_REQUEST_FOCUS_BY_ID.equals(commandType)) {
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    int arg = args.getInt(0);
+                    int count = view.mRows.size();
+                    int rowIndex = 0;
+                    while (count > rowIndex) {
+                        if (view.mRows.get(rowIndex).getViewId() == arg) {
+                            view.setRowFocusByIndex(rowIndex);
+                        }
+                        rowIndex++ ;
+                    }
                 }
             });
         }

@@ -8,6 +8,7 @@ import {
 const LeanbackNativeRow = requireNativeComponent('LeanbackRow');
 
 const REQUEST_FOCUS_ACTION = 'request-focus';
+const REQUEST_FOCUS_ACTION_BY_ID = 'requestFocusById';
 
 const Row = React.forwardRef(
 	(
@@ -75,11 +76,19 @@ const Row = React.forwardRef(
 			requestFocus: () => {
 				requestFocus();
 			},
+			requestFocusById: (viewId) => {
+				requestFocusById(viewId);
+			},
 		}));
 
 		const requestFocus = () => {
 			const node = findNodeHandle(rowRef.current);
 			UIManager.dispatchViewManagerCommand(node, REQUEST_FOCUS_ACTION, []);
+		};
+
+		const requestFocusById = (viewId) => {
+			const node = findNodeHandle(rowRef.current);
+			UIManager.dispatchViewManagerCommand(node, REQUEST_FOCUS_ACTION_BY_ID, [viewId]);
 		};
 
 		return (
