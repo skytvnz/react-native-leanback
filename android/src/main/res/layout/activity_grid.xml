@@ -5,10 +5,24 @@
     android:layout_height="match_parent"
     >
 
-    <com.whyphy.tvgridmodule.CustomGridView
+    <com.rs.leanbacknative.layouts.CustomGridView
         android:id="@+id/grid"
         android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:nextFocusDown="@id/btn"
+        android:descendantFocusability="afterDescendants"
+        android:focusOutEnd="true"
+        android:focusOutFront="true"
+        android:focusOutSideStart="true"
+        android:focusOutSideEnd="true" />
+
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Test button"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         />
 
 </LinearLayout>

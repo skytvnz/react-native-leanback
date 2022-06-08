@@ -1,9 +1,12 @@
-package com.whyphy.tvgridmodule;
+package com.rs.leanbacknative.layouts;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -27,9 +30,9 @@ import androidx.leanback.widget.RowPresenter;
 import androidx.leanback.widget.ShadowOverlayHelper;
 import androidx.leanback.widget.VerticalGridPresenter;
 import androidx.leanback.widget.VerticalGridView;
-import com.rs.leanbacknative.presenters.CardPresenterSelector;
 
-import com.whyphy.tvgridmodule.model.Movie;
+import com.rs.leanbacknative.R;
+import com.rs.leanbacknative.presenters.CardPresenterSelector;
 
 public class CustomGridView extends RelativeLayout {
 
@@ -82,7 +85,6 @@ public class CustomGridView extends RelativeLayout {
             };
 
 
-
     void showOrHideTitle() {
         if (verticalGridView.findViewHolderForAdapterPosition(mSelectedPosition)
                 == null) {
@@ -97,6 +99,7 @@ public class CustomGridView extends RelativeLayout {
 
 
     class VerticalGridItemBridgeAdapter extends ItemBridgeAdapter {
+        @SuppressLint("RestrictedApi")
         @Override
         protected void onCreate(ItemBridgeAdapter.ViewHolder viewHolder) {
             if (viewHolder.itemView instanceof ViewGroup) {
@@ -163,7 +166,7 @@ public class CustomGridView extends RelativeLayout {
 //    }
 
 
-    public void init(Context context){
+    public void init(Context context) {
         Log.e(TAG, "init: ");
         verticalGridView = new VerticalGridView(context);
         verticalGridView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -209,19 +212,17 @@ public class CustomGridView extends RelativeLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-//        setDummyData();
-
-
+        setDummyData();
         super.onDraw(canvas);
     }
 
-    public final void setDummyData(){
-        for (int i = 0; i <20 ; i++) {
+    public final void setDummyData() {
+        for (int i = 0; i < 20; i++) {
             String url = "https://m.media-amazon.com/images/M/MV5BMWEwNjhkYzYtNjgzYy00YTY2LThjYWYtYzViMGJkZTI4Y2MyXkEyXkFqcGdeQXVyNTM0OTY1OQ@@._V1_FMjpg_UX1000_.jpg";
             adapter.add(new Movie("url","test"+i));
         }
         itemBridgeAdapter.setAdapter(adapter);
-        Log.e(TAG, "setDummyData: "+itemBridgeAdapter.getItemCount());
+        Log.e(TAG, "setDummyData: " + itemBridgeAdapter.getItemCount());
 
         verticalGridView.setAdapter(itemBridgeAdapter);
 
@@ -262,6 +263,7 @@ public class CustomGridView extends RelativeLayout {
         return mShadowEnabled;
     }
 
+    @SuppressLint("RestrictedApi")
     public boolean isUsingZOrder(Context context) {
         return !Settings.getInstance(context).preferStaticShadows();
     }
@@ -278,6 +280,23 @@ public class CustomGridView extends RelativeLayout {
                 mOnItemViewSelectedListener.onItemSelected(null, null, null, null);
             } else {
                 mOnItemViewSelectedListener.onItemSelected(ibh.getViewHolder(), ibh.getItem(), null, null);
+            }
+        }
+    }
+
+    @Override
+    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocussedRect) {
+        super.onFocusChanged(gainFocus, direction, previouslyFocussedRect);
+    }
+
+    protected void onKeyEvent(KeyEvent event) {
+        Log.e(TAG, "onKeyEvent: " + event);
+        verticalGridView.getSelectedPosition();
+        int size = verticalGridView.getAdapter().getItemCount();
+
+        if (verticalGridView.getSelectedPosition() > (size - COLUMNS)) {
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                findViewById(R.id.btn).requestFocus();
             }
         }
     }
