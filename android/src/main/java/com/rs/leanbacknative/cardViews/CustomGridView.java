@@ -33,7 +33,7 @@ import com.customgridcomponent.thegird.listeners.KeyListener;
 import com.customgridcomponent.thegird.views.SimpleVerticleGrid;
 import com.google.gson.Gson;
 import com.rs.leanbacknative.models.Data;
-import com.rs.leanbacknative.presenters.CardPresenterSelector;
+import com.rs.leanbacknative.presenters.CardPresenterSelector1;
 
 import java.util.Arrays;
 import java.util.List;
@@ -234,14 +234,14 @@ public class CustomGridView extends RelativeLayout implements KeyListener {
 
     public void setImgHeight(Context context,int h){
         this.imgHeight = h;
-        cardPresenterSelector = new CardPresenterSelector(context,imgHeight,imgWidth);
+        cardPresenterSelector = new CardPresenterSelector1(context,imgHeight,imgWidth);
         adapter = new ArrayObjectAdapter(cardPresenterSelector);
         verticalGridView.setOnChildLaidOutListener(mChildLaidOutListener);
     }
 
     public void setImgWidth(Context context,int w){
         this.imgWidth = w;
-        cardPresenterSelector = new CardPresenterSelector(context,imgHeight,imgWidth);
+        cardPresenterSelector = new CardPresenterSelector1(context,imgHeight,imgWidth);
         adapter = new ArrayObjectAdapter(cardPresenterSelector);
         verticalGridView.setOnChildLaidOutListener(mChildLaidOutListener);
     }

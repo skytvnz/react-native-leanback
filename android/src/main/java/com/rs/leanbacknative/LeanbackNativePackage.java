@@ -23,11 +23,6 @@ public class LeanbackNativePackage implements ReactPackage {
         return Collections.emptyList();
     }
 
-    @Override
-    public List<Class<? extends JavaScriptModule>> createJSModules() {
-        return null;
-    }
-
     @NonNull
     @Override
     public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
