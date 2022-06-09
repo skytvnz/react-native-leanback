@@ -8,11 +8,14 @@ import {
 const LeanbackGrid6Col = requireNativeComponent('LeanbackGrid6Col', null);
 const LeanbackGrid5Col = requireNativeComponent('LeanbackGrid5Col', null);
 const LeanbackGrid4Col = requireNativeComponent('LeanbackGrid4Col', null);
+const CustomGrid = requireNativeComponent('CustomGridView', null);
 
 const REQUEST_FOCUS_ACTION = 'request-focus';
 
 const getGridView = (numOfCols) => {
 	switch (numOfCols) {
+		case 4:
+			return CustomGrid;
 		case 6:
 			return LeanbackGrid6Col;
 		case 5:
@@ -74,6 +77,10 @@ const Grid = React.forwardRef(
 		};
 
 		const GridView = getGridView(numOfCols);
+
+		if (numOfCols === 4) {
+			<GridView gridData={data} gridColumns={5} imgHeight={100} imgWidth={100}/>
+		}
 
 		return (
 			<GridView

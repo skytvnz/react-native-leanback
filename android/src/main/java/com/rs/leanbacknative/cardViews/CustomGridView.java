@@ -1,6 +1,5 @@
-package com.rs.leanbacknative.layouts;
+package com.rs.leanbacknative.cardViews;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -29,14 +28,19 @@ import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.leanback.widget.ShadowOverlayHelper;
 import androidx.leanback.widget.VerticalGridPresenter;
-import androidx.leanback.widget.VerticalGridView;
 
-import com.rs.leanbacknative.R;
+import com.customgridcomponent.thegird.listeners.KeyListener;
+import com.customgridcomponent.thegird.views.SimpleVerticleGrid;
+import com.google.gson.Gson;
+import com.rs.leanbacknative.models.Data;
 import com.rs.leanbacknative.presenters.CardPresenterSelector;
 
-public class CustomGridView extends RelativeLayout {
+import java.util.Arrays;
+import java.util.List;
 
-    private static final int COLUMNS = 4;
+public class CustomGridView extends RelativeLayout implements KeyListener {
+
+    //private static final int COLUMNS = 4;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM;
 
     private OnItemViewClickedListener mOnItemViewClickedListener;
@@ -50,14 +54,25 @@ public class CustomGridView extends RelativeLayout {
     private boolean mRoundedCornersEnabled = true;
     private ItemBridgeAdapter.Wrapper mShadowOverlayWrapper;
     private int mFocusZoomFactor;
-    VerticalGridView verticalGridView;
+    SimpleVerticleGrid verticalGridView;
     VerticalGridPresenter gridPresenter;
 
     ArrayObjectAdapter adapter;
 
+    private int COLUMNS = 5;
     private int mSelectedPosition = -1;
 
     private static final String TAG = "CustomGridView";
+
+    Context mContext;
+
+
+    boolean isReachedEnd = false;
+    boolean isReachedTop = false;
+
+    int imgHeight,imgWidth;
+
+    PresenterSelector cardPresenterSelector;
 
     final private OnItemViewSelectedListener mViewSelectedListener =
             new OnItemViewSelectedListener() {
@@ -99,9 +114,8 @@ public class CustomGridView extends RelativeLayout {
 
 
     class VerticalGridItemBridgeAdapter extends ItemBridgeAdapter {
-        @SuppressLint("RestrictedApi")
         @Override
-        protected void onCreate(ItemBridgeAdapter.ViewHolder viewHolder) {
+        protected void onCreate(ViewHolder viewHolder) {
             if (viewHolder.itemView instanceof ViewGroup) {
                 TransitionHelper.setTransitionGroup((ViewGroup) viewHolder.itemView,
                         true);
@@ -112,11 +126,11 @@ public class CustomGridView extends RelativeLayout {
         }
 
         @Override
-        public void onBind(final ItemBridgeAdapter.ViewHolder itemViewHolder) {
+        public void onBind(final ViewHolder itemViewHolder) {
             // Only when having an OnItemClickListener, we attach t    he OnClickListener.
             if (getOnItemViewClickedListener() != null) {
                 final View itemView = itemViewHolder.getViewHolder().view;
-                itemView.setOnClickListener(new View.OnClickListener() {
+                itemView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (getOnItemViewClickedListener() != null) {
@@ -130,14 +144,14 @@ public class CustomGridView extends RelativeLayout {
         }
 
         @Override
-        public void onUnbind(ItemBridgeAdapter.ViewHolder viewHolder) {
+        public void onUnbind(ViewHolder viewHolder) {
             if (getOnItemViewClickedListener() != null) {
                 viewHolder.getViewHolder().view.setOnClickListener(null);
             }
         }
 
         @Override
-        public void onAttachedToWindow(ItemBridgeAdapter.ViewHolder viewHolder) {
+        public void onAttachedToWindow(ViewHolder viewHolder) {
             viewHolder.itemView.setActivated(true);
         }
     }
@@ -166,10 +180,20 @@ public class CustomGridView extends RelativeLayout {
 //    }
 
 
+    public void setImgHeightWidth(Context context,int h,int w){
+        this.imgHeight = h;
+        this.imgWidth = w;
+        init(context);
+    }
+
+
+
+
     public void init(Context context) {
-        Log.e(TAG, "init: ");
-        verticalGridView = new VerticalGridView(context);
+        this.mContext = context;
+        verticalGridView = new SimpleVerticleGrid(context);
         verticalGridView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        verticalGridView.setKeyListener(this);
 
         itemBridgeAdapter = new VerticalGridItemBridgeAdapter();
         mShadowOverlayHelper = new ShadowOverlayHelper.Builder()
@@ -200,27 +224,47 @@ public class CustomGridView extends RelativeLayout {
             }
         });
 
-        verticalGridView.setNumColumns(5);
+        //   verticalGridView.setNumColumns(5);
         gridPresenter = new VerticalGridPresenter(ZOOM_FACTOR);
         gridPresenter.setNumberOfColumns(COLUMNS);
         setGridPresenter();
 
-        PresenterSelector cardPresenterSelector = new CardPresenterSelector(context);
+
+    }
+
+    public void setImgHeight(Context context,int h){
+        this.imgHeight = h;
+        cardPresenterSelector = new CardPresenterSelector(context,imgHeight,imgWidth);
+        adapter = new ArrayObjectAdapter(cardPresenterSelector);
+        verticalGridView.setOnChildLaidOutListener(mChildLaidOutListener);
+    }
+
+    public void setImgWidth(Context context,int w){
+        this.imgWidth = w;
+        cardPresenterSelector = new CardPresenterSelector(context,imgHeight,imgWidth);
         adapter = new ArrayObjectAdapter(cardPresenterSelector);
         verticalGridView.setOnChildLaidOutListener(mChildLaidOutListener);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        setDummyData();
+//        setDummyData();
+
+
         super.onDraw(canvas);
     }
 
-    public final void setDummyData() {
-        for (int i = 0; i < 20; i++) {
-            String url = "https://m.media-amazon.com/images/M/MV5BMWEwNjhkYzYtNjgzYy00YTY2LThjYWYtYzViMGJkZTI4Y2MyXkEyXkFqcGdeQXVyNTM0OTY1OQ@@._V1_FMjpg_UX1000_.jpg";
-            adapter.add(new Movie("url","test"+i));
+    public final void setNumColumns(int cols) {
+        this.COLUMNS = cols;
+        verticalGridView.setNumColumns(COLUMNS);
+    }
+
+    public final void setData(String data) {
+        List<Data> dataList = Arrays.asList(new Gson().fromJson(data,Data[].class));
+        for (Data d:dataList) {
+            adapter.add(d);
         }
+
         itemBridgeAdapter.setAdapter(adapter);
         Log.e(TAG, "setDummyData: " + itemBridgeAdapter.getItemCount());
 
@@ -263,7 +307,6 @@ public class CustomGridView extends RelativeLayout {
         return mShadowEnabled;
     }
 
-    @SuppressLint("RestrictedApi")
     public boolean isUsingZOrder(Context context) {
         return !Settings.getInstance(context).preferStaticShadows();
     }
@@ -285,19 +328,64 @@ public class CustomGridView extends RelativeLayout {
     }
 
     @Override
-    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocussedRect) {
-        super.onFocusChanged(gainFocus, direction, previouslyFocussedRect);
+    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     }
 
-    protected void onKeyEvent(KeyEvent event) {
+    @Override
+    protected boolean onRequestFocusInDescendants(int direction, Rect previouslyFocusedRect) {
+        Log.e(TAG, "onRequestFocusInDescendants: " + direction);
+        return super.onRequestFocusInDescendants(direction, previouslyFocusedRect);
+    }
+
+    @Override
+    public void onKeyEvent(KeyEvent event) {
         Log.e(TAG, "onKeyEvent: " + event);
         verticalGridView.getSelectedPosition();
         int size = verticalGridView.getAdapter().getItemCount();
+        Log.e(TAG, "onKeyEvent: pos " + verticalGridView.getSelectedPosition() + " last: " + (size - COLUMNS));
 
-        if (verticalGridView.getSelectedPosition() > (size - COLUMNS)) {
+
+        int selectedPos = verticalGridView.getSelectedPosition();
+        if (selectedPos > (size - COLUMNS - 1)) {
+            isReachedTop = false;
             if (event.getAction() == KeyEvent.ACTION_UP) {
-                findViewById(R.id.btn).requestFocus();
+                if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_DOWN) {
+
+                    if (!isReachedEnd) {
+                        isReachedEnd = true;
+                    } else {
+                        getRootView().findViewById(getNextFocusDownId()).requestFocus();
+                    }
+
+                    Log.e(TAG, "onKeyEvent: focus down");
+                }
             }
+        } else if (selectedPos < COLUMNS) {
+            isReachedEnd = false;
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP) {
+                    if (!isReachedTop){
+                        isReachedTop = true;
+                    } else {
+                        getRootView().findViewById(getNextFocusUpId()).requestFocus();
+                    }
+                }
+
+                Log.e(TAG, "onKeyEvent: focus up");
+            }
+        } else if (selectedPos % COLUMNS == 0) {
+            isReachedEnd = false;
+            isReachedTop = false;
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT) {
+                    //     getRootView().findViewById(getNextFocusLeftId()).requestFocus();
+                    Log.e(TAG, "onKeyEvent: focus left");
+                }
+            }
+        }else {
+            isReachedTop = false;
+            isReachedEnd = false;
         }
     }
 }
