@@ -84,7 +84,7 @@ public abstract class AbstractCardPresenter<T extends BaseCardView> extends Pres
         nextFocusUpId = attributes.getInt("nextFocusUpId");
         nextFocusDownId = attributes.getInt("nextFocusDownId");
         nextFocusLeftId = attributes.getInt("nextFocusLeftId");
-        nextFocusRightId = attributes.getInt("nextFocusLeftId");
+        nextFocusRightId = attributes.getInt("nextFocusRightId");
         mBorderRadius = attributes.getInt("borderRadius");
         mCardShape = attributes.getString("cardShape");
         mGridShowOnlyFocusedInfo = attributes.getBoolean("showOnlyFocusedInfo");
@@ -97,6 +97,7 @@ public abstract class AbstractCardPresenter<T extends BaseCardView> extends Pres
             cardView.setId(card.getViewId());
 
         if (mForbiddenFocusDirections != null) {
+            // Check this
             Utils.setForbiddenFocusDirections(mForbiddenFocusDirections, card, cardView);
         }
 
@@ -106,8 +107,10 @@ public abstract class AbstractCardPresenter<T extends BaseCardView> extends Pres
         if (nextFocusDownId != View.NO_ID)
             cardView.setNextFocusDownId(nextFocusDownId);
 
-        if (nextFocusLeftId != View.NO_ID && card.getIndex() == 0)
+        if (nextFocusLeftId != View.NO_ID && card.getIndex() == 0) {
+            cardView.setNextFocusUpId(nextFocusUpId);
             cardView.setNextFocusLeftId(nextFocusLeftId);
+        }
 
         if (nextFocusRightId != View.NO_ID && card.isLast())
             cardView.setNextFocusRightId(nextFocusRightId);

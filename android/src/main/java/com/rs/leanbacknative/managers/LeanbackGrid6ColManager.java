@@ -3,7 +3,10 @@ package com.rs.leanbacknative.managers;
 import androidx.annotation.NonNull;
 import androidx.leanback.app.VerticalGridFragment;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.rs.leanbacknative.layouts.LeanbackGridLayout;
 
 public class LeanbackGrid6ColManager extends BaseGridManager {
@@ -17,12 +20,12 @@ public class LeanbackGrid6ColManager extends BaseGridManager {
 
     @NonNull
     @Override
-    public LeanbackGridLayout createViewInstance(ThemedReactContext context) {
+    protected LeanbackGridLayout createViewInstance(@NonNull ThemedReactContext reactContext) {
         VerticalGridFragment gridFragment = new VerticalGridFragment();
-        LeanbackGridLayout leanbackGridLayout = new LeanbackGridLayout(context, gridFragment, 6);
+        LeanbackGridLayout customGrid = new LeanbackGridLayout(reactContext, gridFragment, 6);
 
-        addView(leanbackGridLayout, gridFragment.getView(), 0);
+        addView(customGrid, gridFragment.getView(), 0);
 
-        return leanbackGridLayout;
+        return customGrid;
     }
 }
