@@ -28,6 +28,8 @@ public class LeanbackRowManager extends ViewGroupManager<LeanbackRowLayout> {
     @Override
     public LeanbackRowLayout createViewInstance(ThemedReactContext context) {
         RowsFragment rowsFragment = new RowsFragment();
+        // ensures the rail align to the top of the container
+        rowsFragment.setAlignment(0);
         LeanbackRowLayout leanbackRowsLayout = new LeanbackRowLayout(context, rowsFragment);
 
         addView(leanbackRowsLayout, rowsFragment.getView(), 0);
